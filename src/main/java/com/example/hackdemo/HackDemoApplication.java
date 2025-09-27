@@ -7,11 +7,15 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.io.IOException;
 
 @SpringBootApplication
 @EnableConfigurationProperties
+@EnableAsync
+@EnableRetry
 public class HackDemoApplication implements CommandLineRunner{
 	@Autowired
 	private ExcelService excelService;
