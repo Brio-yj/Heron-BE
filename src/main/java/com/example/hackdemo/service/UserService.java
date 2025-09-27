@@ -1,5 +1,6 @@
 package com.example.hackdemo.service;
 
+import com.example.hackdemo.event.UserRegisteredEvent;
 import com.example.hackdemo.jwt.JwtTokenProvider;
 import com.example.hackdemo.jwt.UserToken;
 import com.example.hackdemo.model.*;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,6 +36,8 @@ public class UserService {
     private UserTokenRepository userTokenRepository;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
     @Value("${jwt.expiration}")
     private int jwtExpirationInMs;
 
@@ -60,7 +64,10 @@ public class UserService {
                     newUser.setName(name);
                     newUser.setProvider(provider);
                     newUser.setProviderId(providerId);
-                    return userRepository.save(newUser);
+                    User savedUser = userRepository.save(newUser);
+                    applicationEventPublisher.publishEvent(new UserRegisteredEvent(
+                            savedUser.getId(), savedUser.getEmail(), savedUser.getName()));
+                    return savedUser;
                 });
     }
 
